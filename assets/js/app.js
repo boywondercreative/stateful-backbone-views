@@ -26,82 +26,44 @@ $(function($) {
     }
   });
 
-  var DetailView = CloseableView.extend({
+  var DetailView = Backbone.View.extend({
     render: function() {
       this.$el.text(this.model.get('detail'));
       return this;
     }
   });
 
-  var ExpandableView =  CloseableView.extend({
+  var ExpandableView =  Backbone.View.extend({
     events: {
       'click .name': '_clickName'
     },
     render: function() {
-      this.$el.html(_.template($('#template').text())(this.model));
+      this.$el.html(_.template($('#expandable').text())(this.model));
       return this;
     },
     _clickName: function(evt) {
-      this._isSelected = !this._isSelected;
+      this._expanded = !this._expanded;
 
-      if (this._isSelected) {
-        if (!this._detailView) {
-          this._detailView = new DetailView({model: this.model});
-        }
-
-        this._detailView.setElement(this.$('.detail'));
-        this._detailView.render();
-        this.rendered(this._detailView);
+      if (this._expanded) {
+        new DetailView({model: this.model, el: this.$('.detail')}).render();
       } else {
-        this._detailView.close();
-        this.closed(this._detailView);
+        this.$('.detail').empty();
       }
-
       evt.preventDefault();
     }
   });
 
-  var TabView1 = CloseableView.extend({
+  var EmptyView = CloseableView.extend({
     render: function() {
-      if (!this._expandableView) {
-        this._expandableView = new ExpandableView({model: this.model});
-      }
-
-      this._expandableView.setElement(this.$el);
-      this._expandableView.render();
-      this.rendered(this._expandableView);
+      // Do nothing
       return this;
     }
   });
 
-  var RowExpandableView = ExpandableView.extend({
-    onClose: function() {
-      this.remove();
-    }
-  });
+  var model = new Backbone.Model({name: 'Bert', detail: 'A little uptight'});
 
-  var TabView2 = CloseableView.extend({
-    render: function() {
-      this.$el.empty();
-      collection.each(function(model) {
-        var expandableView = new RowExpandableView({model: model});
-        this.$el.append(expandableView.render().$el);
-        this.rendered(expandableView);
-      }, this);
-      return this;
-    }
-  });
-
-  var Model = Backbone.Model.extend({});
-  var Collection = Backbone.Collection.extend({model: Model});
-
-  var collection = new Collection([
-    new Model({name: 'Bert', detail: 'A little uptight'}),
-    new Model({name: 'Ernie', detail: 'The relaxed one'})
-  ]);
-
-  var tabView1 = new TabView1({model: collection.first()});
-  var tabView2 = new TabView2({collection: collection});
+  var expandableView = new ExpandableView({model: model, el: $('.content')});
+  var emptyView = new EmptyView({el: $('.content')});
 
   var Router = Backbone.Router.extend({
     routes: {
@@ -111,17 +73,14 @@ $(function($) {
     showTab1: function() {
       $('.tab2').removeClass('active');
       $('.tab1').addClass('active');
-
-      tabView2.close();
-      tabView1.setElement($('.content'));
-      tabView1.render();
+      $('.content').empty();
+      expandableView.render();
     },
     showTab2: function() {
       $('.tab1').removeClass('active');
       $('.tab2').addClass('active');
-      tabView1.close();
-      tabView2.setElement($('.content'));
-      tabView2.render();
+      $('.content').empty();
+      emptyView.render();
     }
   });
 
