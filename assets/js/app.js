@@ -39,6 +39,10 @@ $(function($) {
     },
     render: function() {
       this.$el.html(_.template($('#template').text())(this.model));
+
+      if (this._isSelected) {
+        this._renderDetailView();
+      }
       return this;
     },
     _clickName: function(evt) {
@@ -49,15 +53,18 @@ $(function($) {
           this._detailView = new DetailView({model: this.model});
         }
 
-        this._detailView.setElement(this.$('.detail'));
-        this._detailView.render();
-        this.rendered(this._detailView);
+        this._renderDetailView();
       } else {
         this._detailView.close();
         this.closed(this._detailView);
       }
 
       evt.preventDefault();
+    },
+    _renderDetailView: function() {
+      this._detailView.setElement(this.$('.detail'));
+      this._detailView.render();
+      this.rendered(this._detailView);
     }
   });
 
