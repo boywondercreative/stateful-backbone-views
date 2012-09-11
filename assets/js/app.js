@@ -1,6 +1,6 @@
 $(function($) {
   var CloseableView = Backbone.View.extend({
-    registerAsRendered: function(subView) {
+    rendered: function(subView) {
       if (!this._renderedSubViews) {
         this._renderedSubViews = [];
       }
@@ -11,7 +11,7 @@ $(function($) {
       return subView;
     },
 
-    deregister: function(subView) {
+    closed: function(subView) {
       this._renderedSubViews = _(this._renderedSubViews).without(subView);
     },
 
@@ -51,10 +51,10 @@ $(function($) {
 
         this._detailView.setElement(this.$('.detail'));
         this._detailView.render();
-        this.registerAsRendered(this._detailView);
+        this.rendered(this._detailView);
       } else {
         this._detailView.close();
-        this.deregister(this._detailView);
+        this.closed(this._detailView);
       }
 
       evt.preventDefault();
@@ -69,7 +69,7 @@ $(function($) {
 
       this._expandableView.setElement(this.$el);
       this._expandableView.render();
-      this.registerAsRendered(this._expandableView);
+      this.rendered(this._expandableView);
       return this;
     }
   });
@@ -86,7 +86,7 @@ $(function($) {
       collection.each(function(model) {
         var expandableView = new RowExpandableView({model: model});
         this.$el.append(expandableView.render().$el);
-        this.registerAsRendered(expandableView);
+        this.rendered(expandableView);
       }, this);
       return this;
     }
