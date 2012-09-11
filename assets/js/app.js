@@ -62,6 +62,7 @@ $(function($) {
 
       if (this._isSelected) {
         this._renderDetailView();
+        this._detailView.$el.show();
       }
       return this;
     },
@@ -74,9 +75,12 @@ $(function($) {
         }
 
         this._renderDetailView();
+        this._detailView.$el.slideDown();
       } else {
-        this._detailView.close();
-        this.closed(this._detailView);
+        this._detailView.$el.slideUp(_.bind(function() {
+          this._detailView.close();
+          this.closed(this._detailView);
+        }, this));
       }
 
       evt.preventDefault();
