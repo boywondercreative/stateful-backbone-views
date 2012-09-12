@@ -100,11 +100,24 @@ $(function($) {
     render: function() {
       if (!this._expandableViews) {
         this._expandableViews = [];
-
-        this.collection.each(function(model) {
-          this._expandableViews.push(new ExpandableView({model: model}));
-        }, this);
       }
+
+      var modelsWithViews = _(this._expandableViews).pluck('model');
+
+      var modelsThatNeedViews = _.difference(this.collection.models, modelsWithViews);
+      _(modelsThatNeedViews).each(function(model) {
+        this._expandableViews.push(new ExpandableView({model: model}));
+      }, this);
+
+      var modelsWhoseViewsShouldBeRemoved = _.difference(modelsWithViews, this.collection.models);
+      _(modelsWhoseViewsShouldBeRemoved).each(function(model) {
+        // Find the view to be removed
+        var expandableView = _(this._expandableViews).find(function(expandableView) {
+          return expandableView.model === model;
+        });
+        expandableView.close();
+        this._expandableViews = _(this._expandableViews).without(expandableView);
+      }, this);
 
       this.$el.empty();
 
