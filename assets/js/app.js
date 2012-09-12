@@ -27,6 +27,10 @@ $(function($) {
   });
 
   var model = new Backbone.Model({name: 'Bert', detail: 'A little uptight'});
+  var collection = new Backbone.Collection([
+    model,
+    new Backbone.Model({name: 'Ernie', detail: 'More relaxed'})
+  ]);
 
   var Router = Backbone.Router.extend({
     routes: {
@@ -38,7 +42,7 @@ $(function($) {
       $('.tab1').addClass('active');
 
       if (!this._expandableView) this._expandableView = new ExpandableView({model: model});
-      if (this._emptyView) this._emptyView.close();
+      if (this._listView) this._listView.close();
       this._expandableView.setElement($('.content'));
       this._expandableView.render();
     },
@@ -46,10 +50,10 @@ $(function($) {
       $('.tab1').removeClass('active');
       $('.tab2').addClass('active');
 
-      if (!this._emptyView) this._emptyView = new EmptyView({model: model});
+      if (!this._listView) this._listView = new ListView({collection: collection});
       if (this._expandableView) this._expandableView.close();
-      this._emptyView.setElement($('.content'));
-      this._emptyView.render();
+      this._listView.setElement($('.content'));
+      this._listView.render();
     }
   });
 
@@ -92,10 +96,13 @@ $(function($) {
     }
   });
 
-  var EmptyView = CloseableView.extend({
+  var ListView = CloseableView.extend({
     render: function() {
-      // Do nothing
-      return this;
+      this.$el.empty();
+
+      this.collection.each(function(model) {
+        this.$el.append(new ExpandableView({model: model}).render().$el);
+      }, this);
     }
   });
 
