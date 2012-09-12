@@ -60,16 +60,16 @@ $(function($) {
     render: function() {
       this.$el.html(_.template($('#template').text())(this.model));
 
-      if (this._isSelected) {
+      if (this._isExpanded) {
         this._renderDetailView();
         this._detailView.$el.show();
       }
       return this;
     },
     _clickName: function(evt) {
-      this._isSelected = !this._isSelected;
+      this._isExpanded = !this._isExpanded;
 
-      if (this._isSelected) {
+      if (this._isExpanded) {
         if (!this._detailView) {
           this._detailView = new DetailView({model: this.model});
         }
