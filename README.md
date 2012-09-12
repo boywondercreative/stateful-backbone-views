@@ -1,2 +1,1 @@
-stateful-backbone-views
-=======================
+Demo example for  http://blog.shinetech.com/2012/09/12/stateful-views-with-backbone-js
