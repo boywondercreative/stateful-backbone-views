@@ -98,10 +98,20 @@ $(function($) {
 
   var ListView = CloseableView.extend({
     render: function() {
+      if (!this._expandableViews) {
+        this._expandableViews = [];
+
+        this.collection.each(function(model) {
+          this._expandableViews.push(new ExpandableView({model: model}));
+        }, this);
+      }
+
       this.$el.empty();
 
-      this.collection.each(function(model) {
-        this.$el.append(new ExpandableView({model: model}).render().$el);
+      _(this._expandableViews).each(function(expandableView) {
+        this.$el.append(expandableView.render().$el);
+        this.rendered(expandableView);
+        expandableView.delegateEvents();
       }, this);
     }
   });
