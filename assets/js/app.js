@@ -27,7 +27,7 @@ $(function($) {
   });
 
   var model = new Backbone.Model({name: 'Bert', detail: 'A little uptight'});
-  var collection = new Backbone.Collection([
+  collection = new Backbone.Collection([
     model,
     new Backbone.Model({name: 'Ernie', detail: 'More relaxed'})
   ]);
@@ -98,6 +98,20 @@ $(function($) {
 
   var ListView = CloseableView.extend({
     render: function() {
+      this._renderList();
+      this.collection.on('reset', this._reset, this);
+    },
+    onClose: function() {
+      this.collection.off('reset', this._reset, this);
+    },
+    _reset: function() {
+      _(this._expandableViews).each(function(expandableView) {
+        expandableView.close();
+        this.closed(expandableView);
+      }, this);
+      this._renderList();
+    },
+    _renderList: function() {
       if (!this._expandableViews) {
         this._expandableViews = [];
       }
@@ -115,7 +129,7 @@ $(function($) {
         var expandableView = _(this._expandableViews).find(function(expandableView) {
           return expandableView.model === model;
         });
-        expandableView.close();
+
         this._expandableViews = _(this._expandableViews).without(expandableView);
       }, this);
 
